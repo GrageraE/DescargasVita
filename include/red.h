@@ -11,4 +11,5 @@ private:
     void limpiarRed();
     void descargar();
     std::string* url = nullptr;
+    const long size = 1024*1024;
 };

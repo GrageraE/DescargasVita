@@ -19,8 +19,8 @@ void Red::inicializarRed()
     //Inicializamos la red
     SceNetInitParam* param;
     param->flags = 0;
-    param->size = 1024*1024;
-    param->memory = malloc(1024*1024);
+    param->size = size;
+    param->memory = malloc(size);
     sceNetInit(param);
     sceNetCtlInit();
     //Inicializamos el Http

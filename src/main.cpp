@@ -22,6 +22,7 @@ int main()
         
         if(data.buttons == SCE_CTRL_CROSS)
         {
+            sceKernelDelayThread(0.5*1000*1000);
             SceCtrlData data2;
             printf("Se obtendran los enlaces de la carpeta: ux0:/data/DescargasVita/\n");
             printf("Pulsa SELECT para salir\n");
@@ -31,22 +32,33 @@ int main()
                 sceCtrlPeekBufferPositive(0, &data2, 2);
                 
                 if(data2.buttons == SCE_CTRL_SELECT) goto salida;
-                else if(data2.buttons == SCE_CTRL_START) break;
-            }while(data2.buttons != SCE_CTRL_START || data2.buttons != SCE_CTRL_CROSS);
+                if(data2.buttons == SCE_CTRL_CROSS || data2.buttons == SCE_CTRL_START) break;
+            }while(true);
 
             printf("Abriendo...\n");
-            Archivos a("ux0:/data/DescargasVita");
+            Archivos a("ux0:/data/DescargasVita/");
             a.abrirDirectorio();
-            std::vector<std::string> lista = a.obtenerEntradas();
-            for(int i = 0; i < lista.size(); ++i)
+            a.leerArchivos();
+            std::vector<std::string> enlaces = a.obtenerEnlaces();
+            printf("AVISO: Se descargaran de los siguientes enlaces:\n");
+            for(int i = 0; i < enlaces.size(); ++i)
             {
-                printf("%s \n", lista.at(i).c_str());
+                printf(enlaces.at(i).c_str());
+                printf("\n");
             }
+            Archivos::Errores errores = a.comprobarErrores();
+            printf("Errores:\n");
+            printf("Directorio: %d \n", errores.directorio);
+            printf("Archivo: descriptores: %d \n", errores.archivo_descriptor);
+            printf("    Codigo de error (si no es negativo, no es error): %d \n", errores.codigo_archivo_descriptor);
+            printf("Archivo: memoria: %d \n", errores.archivo_memoria);
+            sceKernelDelayThread(3*1000*1000);
+            goto salida;
         }
     }while(data.buttons != SCE_CTRL_SELECT);
     salida:;
     //.limpiar();
-    printf("Saliendo...\n");
+    printf("\nSaliendo...\n");
     sceKernelExitProcess(0);
     return 0;
 }
